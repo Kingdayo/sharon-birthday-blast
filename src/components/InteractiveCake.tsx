@@ -12,80 +12,91 @@ export const InteractiveCake = () => {
   const startListening = async () => {
     try {
       console.log("Starting microphone listening...");
+      
+      // Request microphone access with more permissive settings
       const stream = await navigator.mediaDevices.getUserMedia({ 
-        audio: { 
+        audio: {
           echoCancellation: false,
           noiseSuppression: false,
           autoGainControl: false,
-          sampleRate: 44100
+          sampleRate: 44100,
+          channelCount: 1
         } 
       });
       
-      const audioContext = new AudioContext();
+      console.log("Microphone stream obtained:", stream.getAudioTracks());
+      
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      
+      // Resume audio context if suspended (required in some browsers)
+      if (audioContext.state === 'suspended') {
+        await audioContext.resume();
+        console.log("Audio context resumed");
+      }
+      
       const analyser = audioContext.createAnalyser();
       const microphone = audioContext.createMediaStreamSource(stream);
       
+      // Connect microphone to analyser
       microphone.connect(analyser);
-      analyser.fftSize = 2048;
+      
+      // Configure analyser for better sensitivity
+      analyser.fftSize = 1024;
       analyser.smoothingTimeConstant = 0.1;
+      analyser.minDecibels = -90;
+      analyser.maxDecibels = -10;
       
       const bufferLength = analyser.frequencyBinCount;
       const dataArray = new Uint8Array(bufferLength);
       const timeDataArray = new Uint8Array(analyser.fftSize);
       
-      let previousVolume = 0;
+      let frameCount = 0;
       let blowDetected = false;
-      let consecutiveBlowSamples = 0;
+      let maxVolumeSeen = 0;
 
       const checkVolume = () => {
+        frameCount++;
+        
         // Get both frequency and time domain data
         analyser.getByteFrequencyData(dataArray);
         analyser.getByteTimeDomainData(timeDataArray);
         
-        // Calculate RMS (Root Mean Square) for better volume detection
-        let rms = 0;
+        // Calculate multiple volume metrics
+        let sum = 0;
+        let peak = 0;
+        
         for (let i = 0; i < timeDataArray.length; i++) {
-          const normalized = (timeDataArray[i] - 128) / 128;
-          rms += normalized * normalized;
-        }
-        rms = Math.sqrt(rms / timeDataArray.length) * 100;
-        
-        // Focus on lower frequency range typical of blowing sounds (0-300Hz)
-        const sampleRate = audioContext.sampleRate;
-        const lowFreqEnd = Math.floor((300 / sampleRate) * bufferLength);
-        const blowRange = dataArray.slice(0, lowFreqEnd);
-        const midRange = dataArray.slice(lowFreqEnd, lowFreqEnd * 3);
-        
-        const totalVolume = dataArray.reduce((sum, value) => sum + value, 0) / bufferLength;
-        const blowVolume = blowRange.reduce((sum, value) => sum + value, 0) / blowRange.length;
-        const midVolume = midRange.reduce((sum, value) => sum + value, 0) / midRange.length;
-        
-        // Enhanced blow detection using multiple criteria
-        const volumeIncrease = rms - previousVolume;
-        const isLowFreqDominant = blowVolume > midVolume * 1.2;
-        const hasVolume = rms > 5; // Lowered threshold
-        const hasIncrease = volumeIncrease > 2;
-        
-        // Count consecutive samples that look like blowing
-        if (hasVolume && (isLowFreqDominant || hasIncrease)) {
-          consecutiveBlowSamples++;
-        } else {
-          consecutiveBlowSamples = 0;
+          const value = Math.abs(timeDataArray[i] - 128);
+          sum += value;
+          peak = Math.max(peak, value);
         }
         
-        const isBlowPattern = consecutiveBlowSamples >= 3; // Need 3 consecutive samples
+        const averageVolume = sum / timeDataArray.length;
+        const normalizedPeak = (peak / 128) * 100;
         
-        console.log(`RMS: ${rms.toFixed(1)}, TotalVol: ${totalVolume.toFixed(1)}, BlowVol: ${blowVolume.toFixed(1)}, Consecutive: ${consecutiveBlowSamples}, Pattern: ${isBlowPattern}`);
+        // Calculate frequency domain volume
+        const freqSum = dataArray.reduce((acc, val) => acc + val, 0);
+        const freqAverage = freqSum / dataArray.length;
         
-        // If blow pattern detected and candles are lit, blow them out
-        if (isBlowPattern && candlesLit.some(candle => candle) && !blowDetected) {
-          console.log("🎉 BLOW DETECTED! Extinguishing candles...");
+        // Track maximum volume seen for calibration
+        maxVolumeSeen = Math.max(maxVolumeSeen, averageVolume, freqAverage);
+        
+        // Enhanced blow detection - multiple approaches
+        const isAnyAudio = averageVolume > 1 || freqAverage > 1 || normalizedPeak > 5;
+        const isBlowLikePattern = averageVolume > 3 || freqAverage > 5 || normalizedPeak > 10;
+        
+        // Log detailed info every 30 frames (~1 second) or when audio detected
+        if (frameCount % 30 === 0 || isAnyAudio) {
+          console.log(`🎤 Frame ${frameCount}: AvgVol=${averageVolume.toFixed(1)}, Peak=${normalizedPeak.toFixed(1)}, FreqAvg=${freqAverage.toFixed(1)}, MaxSeen=${maxVolumeSeen.toFixed(1)}, AudioDetected=${isAnyAudio}`);
+        }
+        
+        // Trigger candle blow out on any significant audio activity
+        if (isBlowLikePattern && candlesLit.some(candle => candle) && !blowDetected) {
+          console.log("🎉 AUDIO DETECTED! Blowing out candles...");
           blowDetected = true;
           blowOutCandles();
           setTimeout(() => stopListening(), 500);
         }
-        
-        previousVolume = rms;
         
         if (isListening) {
           requestAnimationFrame(checkVolume);
@@ -95,10 +106,17 @@ export const InteractiveCake = () => {
       // Store the stream for cleanup
       mediaStreamRef.current = stream;
       setIsListening(true);
-      checkVolume();
+      
+      // Add a small delay before starting analysis
+      setTimeout(() => {
+        console.log("Starting audio analysis...");
+        checkVolume();
+      }, 100);
+      
     } catch (error) {
-      console.error("Error accessing microphone:", error);
-      alert("Please allow microphone access to blow out candles!");
+      console.error("❌ Error accessing microphone:", error);
+      alert("Please allow microphone access and try again! Make sure you're using HTTPS or localhost.");
+      setIsListening(false);
     }
   };
 
