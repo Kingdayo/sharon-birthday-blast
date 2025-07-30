@@ -81,9 +81,9 @@ export const InteractiveCake = () => {
         // Track maximum volume seen for calibration
         maxVolumeSeen = Math.max(maxVolumeSeen, averageVolume, freqAverage);
         
-        // Enhanced blow detection - multiple approaches
-        const isAnyAudio = averageVolume > 1 || freqAverage > 1 || normalizedPeak > 5;
-        const isBlowLikePattern = averageVolume > 3 || freqAverage > 5 || normalizedPeak > 10;
+        // Enhanced blow detection - much more sensitive thresholds based on observed values
+        const isAnyAudio = averageVolume > 0.2 || freqAverage > 0.5 || normalizedPeak > 0.5;
+        const isBlowLikePattern = averageVolume > 0.25 || freqAverage > 1.0 || normalizedPeak > 0.6;
         
         // Log detailed info every 30 frames (~1 second) or when audio detected
         if (frameCount % 30 === 0 || isAnyAudio) {
