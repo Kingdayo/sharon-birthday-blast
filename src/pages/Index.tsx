@@ -5,21 +5,16 @@ import { BirthdayCard } from "@/components/BirthdayCard";
 import { ScratchCard } from "@/components/ScratchCard";
 import { InteractiveCake } from "@/components/InteractiveCake";
 import { SharonAvatar } from "@/components/SharonAvatar";
-
 const Index = () => {
   const [showConfetti, setShowConfetti] = useState(true);
-
   useEffect(() => {
     // Hide confetti after 6 seconds
     const timer = setTimeout(() => {
       setShowConfetti(false);
     }, 6000);
-
     return () => clearTimeout(timer);
   }, []);
-
-  return (
-    <div className="min-h-screen relative overflow-hidden">
+  return <div className="min-h-screen relative overflow-hidden">
       {/* Animated Background Elements */}
       {showConfetti && <ConfettiAnimation />}
       <FloatingBalloons />
@@ -49,12 +44,7 @@ const Index = () => {
           </div>
 
           {/* Scratch Card */}
-          <div className="space-y-4">
-            <h2 className="text-xl font-semibold text-center text-foreground">
-              🔍 Hidden Surprise
-            </h2>
-            <ScratchCard />
-          </div>
+          
 
           {/* Interactive Cake */}
           <div className="space-y-4">
@@ -81,8 +71,6 @@ const Index = () => {
           </p>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
