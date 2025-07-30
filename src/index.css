@@ -80,41 +80,65 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    /* Dark Birthday Party Background */
+    --background: 320 25% 8%;
+    --foreground: 310 20% 92%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    /* Dark Card Components */
+    --card: 320 20% 12%;
+    --card-foreground: 310 20% 92%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 320 20% 10%;
+    --popover-foreground: 310 20% 92%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    /* Enhanced Purple Primary for Dark Mode */
+    --primary: 320 70% 65%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 320 80% 75%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    /* Dark Secondary Purple */
+    --secondary: 280 60% 55%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    /* Dark Muted */
+    --muted: 320 15% 15%;
+    --muted-foreground: 310 15% 65%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    /* Dark Accent Gold */
+    --accent: 45 90% 70%;
+    --accent-foreground: 320 25% 8%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    /* Enhanced Party Colors for Dark */
+    --party-blue: 200 80% 70%;
+    --party-green: 140 60% 65%;
+    --party-orange: 25 90% 70%;
+    
+    /* Dark Celebration Gradients */
+    --gradient-party: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)));
+    --gradient-cake: linear-gradient(180deg, hsl(var(--accent)), hsl(25 85% 75%));
+    --gradient-magic: linear-gradient(45deg, hsl(var(--primary)), hsl(var(--party-blue)), hsl(var(--accent)));
+    --gradient-confetti: conic-gradient(hsl(var(--primary)), hsl(var(--party-blue)), hsl(var(--accent)), hsl(var(--party-green)), hsl(var(--party-orange)));
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
+    /* Enhanced Magical Shadows for Dark */
+    --shadow-party: 0 10px 30px -5px hsl(var(--primary) / 0.5);
+    --shadow-glow: 0 0 40px hsl(var(--primary-glow) / 0.8);
+    --shadow-cake: 0 15px 35px -5px hsl(var(--accent) / 0.6);
+
+    --destructive: 0 84% 65%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 320 15% 20%;
+    --input: 320 15% 18%;
+    --ring: 320 70% 65%;
+
+    --sidebar-background: 320 20% 10%;
+    --sidebar-foreground: 310 20% 85%;
+    --sidebar-primary: 320 70% 60%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-accent: 320 15% 18%;
+    --sidebar-accent-foreground: 310 20% 85%;
+    --sidebar-border: 320 15% 20%;
+    --sidebar-ring: 320 70% 65%;
   }
 }
 
@@ -127,6 +151,11 @@ All colors MUST be HSL.
     @apply bg-background text-foreground;
     min-height: 100vh;
     background: linear-gradient(135deg, hsl(var(--background)) 0%, hsl(var(--muted)) 100%);
+  }
+  
+  /* Force dark mode for this birthday party theme */
+  html {
+    @apply dark;
   }
 }
 
