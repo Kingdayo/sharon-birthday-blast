@@ -2,41 +2,65 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+/* Sharon's Birthday Party Design System 
+Festive colors and magical gradients for a special celebration
 All colors MUST be HSL.
 */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Birthday Party Background */
+    --background: 310 45% 97%;
+    --foreground: 320 25% 20%;
 
+    /* Card Components */
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 320 25% 20%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 320 20% 98%;
+    --popover-foreground: 320 25% 20%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Primary Party Pink */
+    --primary: 320 70% 55%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 320 80% 75%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Secondary Party Purple */
+    --secondary: 280 60% 65%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Muted Pastels */
+    --muted: 310 30% 95%;
+    --muted-foreground: 320 20% 45%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Accent Gold */
+    --accent: 45 90% 60%;
+    --accent-foreground: 320 25% 20%;
+
+    /* Party Colors */
+    --party-blue: 200 80% 65%;
+    --party-green: 140 60% 60%;
+    --party-orange: 25 90% 65%;
+    
+    /* Celebration Gradients */
+    --gradient-party: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)));
+    --gradient-cake: linear-gradient(180deg, hsl(var(--accent)), hsl(25 85% 70%));
+    --gradient-magic: linear-gradient(45deg, hsl(var(--primary)), hsl(var(--party-blue)), hsl(var(--accent)));
+    --gradient-confetti: conic-gradient(hsl(var(--primary)), hsl(var(--party-blue)), hsl(var(--accent)), hsl(var(--party-green)), hsl(var(--party-orange)));
+
+    /* Magical Shadows */
+    --shadow-party: 0 10px 30px -5px hsl(var(--primary) / 0.3);
+    --shadow-glow: 0 0 40px hsl(var(--primary-glow) / 0.6);
+    --shadow-cake: 0 15px 35px -5px hsl(var(--accent) / 0.4);
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 320 30% 90%;
+    --input: 320 30% 95%;
+    --ring: 320 70% 55%;
 
-    --radius: 0.5rem;
+    --radius: 1rem;
 
     --sidebar-background: 0 0% 98%;
 
@@ -101,5 +125,29 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    min-height: 100vh;
+    background: linear-gradient(135deg, hsl(var(--background)) 0%, hsl(var(--muted)) 100%);
+  }
+}
+
+@layer utilities {
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+  
+  .transform-style-preserve-3d {
+    transform-style: preserve-3d;
+  }
+  
+  .backface-hidden {
+    backface-visibility: hidden;
+  }
+  
+  .rotate-y-180 {
+    transform: rotateY(180deg);
+  }
+  
+  .rotate-y-12 {
+    transform: rotateY(12deg);
   }
 }
