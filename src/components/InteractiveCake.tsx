@@ -11,7 +11,14 @@ export const InteractiveCake = () => {
 
   const startListening = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      console.log("Starting microphone listening...");
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        audio: { 
+          echoCancellation: false,
+          noiseSuppression: false,
+          autoGainControl: false 
+        } 
+      });
       const mediaRecorder = new MediaRecorder(stream);
       mediaRecorderRef.current = mediaRecorder;
 
@@ -20,32 +27,40 @@ export const InteractiveCake = () => {
       const microphone = audioContext.createMediaStreamSource(stream);
       
       microphone.connect(analyser);
-      analyser.fftSize = 256;
+      analyser.fftSize = 1024; // Increased for better frequency resolution
+      analyser.smoothingTimeConstant = 0.3;
       
       const bufferLength = analyser.frequencyBinCount;
       const dataArray = new Uint8Array(bufferLength);
+      let previousVolume = 0;
+      let blowDetected = false;
 
       const checkVolume = () => {
         analyser.getByteFrequencyData(dataArray);
         
-        // Enhanced blow detection - focus on mid-range frequencies typical of blowing
-        const lowFreq = dataArray.slice(1, 8);
-        const midFreq = dataArray.slice(8, 25);
-        const highFreq = dataArray.slice(25, 50);
+        // Focus on lower frequency range typical of blowing sounds (20Hz-200Hz)
+        const blowRange = dataArray.slice(1, 20); // Roughly 20-200Hz range
+        const midRange = dataArray.slice(20, 60);  // Mid frequencies
+        const totalVolume = dataArray.reduce((sum, value) => sum + value, 0) / bufferLength;
         
-        const lowAvg = lowFreq.reduce((sum, value) => sum + value, 0) / lowFreq.length;
-        const midAvg = midFreq.reduce((sum, value) => sum + value, 0) / midFreq.length;
-        const highAvg = highFreq.reduce((sum, value) => sum + value, 0) / highFreq.length;
+        const blowVolume = blowRange.reduce((sum, value) => sum + value, 0) / blowRange.length;
+        const midVolume = midRange.reduce((sum, value) => sum + value, 0) / midRange.length;
         
-        // Detect blow pattern: strong low-mid frequencies with sudden spike
-        const blowStrength = (lowAvg + midAvg * 1.5) / 2;
-        const isBlowPattern = blowStrength > 30 && midAvg > lowAvg && midAvg > highAvg;
+        // Detect sudden increase in low frequencies (blow pattern)
+        const volumeIncrease = totalVolume - previousVolume;
+        const isBlowPattern = blowVolume > 25 && blowVolume > midVolume && volumeIncrease > 10;
         
-        // If blow pattern detected, blow out candles
-        if (isBlowPattern && candlesLit.some(candle => candle)) {
+        console.log(`Volume: ${totalVolume.toFixed(1)}, Blow: ${blowVolume.toFixed(1)}, Pattern: ${isBlowPattern}`);
+        
+        // If blow pattern detected and candles are lit, blow them out
+        if (isBlowPattern && candlesLit.some(candle => candle) && !blowDetected) {
+          console.log("Blow detected! Extinguishing candles...");
+          blowDetected = true;
           blowOutCandles();
-          stopListening();
+          setTimeout(() => stopListening(), 500);
         }
+        
+        previousVolume = totalVolume;
         
         if (isListening) {
           requestAnimationFrame(checkVolume);

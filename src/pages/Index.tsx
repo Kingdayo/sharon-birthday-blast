@@ -33,35 +33,41 @@ const Index = () => {
           </p>
         </div>
 
-        {/* Interactive Components Grid - Responsive */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 sm:gap-8 mb-8 sm:mb-12">
+        {/* Interactive Components Grid - Enhanced for wider screens */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-6 lg:gap-8 xl:gap-12 mb-8 sm:mb-12 max-w-7xl mx-auto">
           {/* Birthday Card */}
-          <div className="space-y-3 sm:space-y-4 order-1">
+          <div className="space-y-3 sm:space-y-4 order-1 flex flex-col items-center">
             <h2 className="text-lg sm:text-xl font-semibold text-center text-foreground">
               🎁 Special Message
             </h2>
-            <BirthdayCard />
+            <div className="w-full max-w-md">
+              <BirthdayCard />
+            </div>
           </div>
 
           {/* Interactive Cake */}
-          <div className="space-y-3 sm:space-y-4 order-2 lg:order-3 xl:order-2">
+          <div className="space-y-3 sm:space-y-4 order-2 lg:order-2 2xl:order-2 flex flex-col items-center">
             <h2 className="text-lg sm:text-xl font-semibold text-center text-foreground">
               🕯️ Make a Wish
             </h2>
-            <InteractiveCake />
+            <div className="w-full max-w-md">
+              <InteractiveCake />
+            </div>
           </div>
 
-          {/* Scratch Card - Hidden for now but keeping structure */}
-          <div className="hidden space-y-3 sm:space-y-4 order-3">
+          {/* Sharon Avatar - Show on wider screens as third column */}
+          <div className="hidden 2xl:flex space-y-3 sm:space-y-4 order-3 flex-col items-center">
             <h2 className="text-lg sm:text-xl font-semibold text-center text-foreground">
-              🎫 Scratch to Reveal
+              👋 Say Hi to Sharon!
             </h2>
-            <ScratchCard />
+            <div className="w-full max-w-md">
+              <SharonAvatar />
+            </div>
           </div>
         </div>
 
-        {/* Sharon Avatar */}
-        <div className="flex justify-center">
+        {/* Sharon Avatar - Show on smaller screens below content */}
+        <div className="flex justify-center 2xl:hidden">
           <SharonAvatar />
         </div>
 
