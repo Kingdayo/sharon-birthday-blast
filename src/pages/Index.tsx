@@ -8,10 +8,10 @@ import { SharonAvatar } from "@/components/SharonAvatar";
 const Index = () => {
   const [showConfetti, setShowConfetti] = useState(true);
   useEffect(() => {
-    // Hide confetti after 6 seconds
+    // Hide confetti after 12 seconds for longer celebration
     const timer = setTimeout(() => {
       setShowConfetti(false);
-    }, 6000);
+    }, 12000);
     return () => clearTimeout(timer);
   }, []);
   return <div className="min-h-screen relative overflow-hidden">
@@ -33,25 +33,30 @@ const Index = () => {
           </p>
         </div>
 
-        {/* Interactive Components Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+        {/* Interactive Components Grid - Responsive */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 sm:gap-8 mb-8 sm:mb-12">
           {/* Birthday Card */}
-          <div className="space-y-4">
-            <h2 className="text-xl font-semibold text-center text-foreground">
+          <div className="space-y-3 sm:space-y-4 order-1">
+            <h2 className="text-lg sm:text-xl font-semibold text-center text-foreground">
               🎁 Special Message
             </h2>
             <BirthdayCard />
           </div>
 
-          {/* Scratch Card */}
-          
-
           {/* Interactive Cake */}
-          <div className="space-y-4">
-            <h2 className="text-xl font-semibold text-center text-foreground">
+          <div className="space-y-3 sm:space-y-4 order-2 lg:order-3 xl:order-2">
+            <h2 className="text-lg sm:text-xl font-semibold text-center text-foreground">
               🕯️ Make a Wish
             </h2>
             <InteractiveCake />
+          </div>
+
+          {/* Scratch Card - Hidden for now but keeping structure */}
+          <div className="hidden space-y-3 sm:space-y-4 order-3">
+            <h2 className="text-lg sm:text-xl font-semibold text-center text-foreground">
+              🎫 Scratch to Reveal
+            </h2>
+            <ScratchCard />
           </div>
         </div>
 

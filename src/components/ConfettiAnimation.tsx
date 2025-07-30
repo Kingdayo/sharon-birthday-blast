@@ -27,24 +27,24 @@ export const ConfettiAnimation = () => {
 
     const shapes: ConfettiPiece['shape'][] = ['circle', 'square', 'triangle', 'heart', 'star'];
 
-    const pieces: ConfettiPiece[] = Array.from({ length: 80 }, (_, i) => ({
+    const pieces: ConfettiPiece[] = Array.from({ length: 120 }, (_, i) => ({
       id: i,
       color: colors[Math.floor(Math.random() * colors.length)],
       left: Math.random() * 100,
-      delay: Math.random() * 4,
-      size: Math.random() * 12 + 6,
+      delay: Math.random() * 6,
+      size: Math.random() * 15 + 4,
       shape: shapes[Math.floor(Math.random() * shapes.length)],
       rotation: Math.random() * 360,
-      drift: (Math.random() - 0.5) * 50,
-      opacity: 0.7 + Math.random() * 0.3,
+      drift: (Math.random() - 0.5) * 80,
+      opacity: 0.6 + Math.random() * 0.4,
     }));
 
     setConfetti(pieces);
 
-    // Clean up after animation
+    // Clean up after extended animation
     const timer = setTimeout(() => {
       setConfetti([]);
-    }, 8000);
+    }, 15000);
 
     return () => clearTimeout(timer);
   }, []);
@@ -100,7 +100,7 @@ export const ConfettiAnimation = () => {
           className="absolute"
           style={{
             left: `${piece.left}%`,
-            animation: `confettiRealistic 4s linear infinite`,
+            animation: `confettiRealistic 6s linear infinite`,
             animationDelay: `${piece.delay}s`,
             transform: `rotate(${piece.rotation}deg)`,
             '--drift': `${piece.drift}px`,
