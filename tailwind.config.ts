@@ -118,6 +118,25 @@ export default {
 					'0%': { transform: 'translateY(-100vh) rotate(0deg)', opacity: '1' },
 					'100%': { transform: 'translateY(100vh) rotate(360deg)', opacity: '0' }
 				},
+				'confetti-realistic': {
+					'0%': { 
+						transform: 'translateY(-100vh) translateX(0) rotate(0deg) scale(1)', 
+						opacity: '1' 
+					},
+					'25%': { 
+						transform: 'translateY(-50vh) translateX(var(--drift, 0px)) rotate(90deg) scale(0.8)' 
+					},
+					'50%': { 
+						transform: 'translateY(0vh) translateX(calc(var(--drift, 0px) * 1.5)) rotate(180deg) scale(1.1)' 
+					},
+					'75%': { 
+						transform: 'translateY(50vh) translateX(calc(var(--drift, 0px) * 0.8)) rotate(270deg) scale(0.9)' 
+					},
+					'100%': { 
+						transform: 'translateY(100vh) translateX(var(--drift, 0px)) rotate(360deg) scale(0.6)', 
+						opacity: '0' 
+					}
+				},
 				'text-scramble': {
 					'0%': { opacity: '0' },
 					'50%': { opacity: '0.5' },

@@ -17,19 +17,19 @@ const ScrambleText = ({ text, isRevealed }: ScrambleTextProps) => {
       return;
     }
 
-    const scrambleChars = "!@#$%^&*()";
+    const scrambleChars = "!@#$%^&*()_+-=[]{}|;:,.<>?";
     let interval: NodeJS.Timeout;
 
     const revealText = () => {
       if (currentIndex < text.length) {
-        // Scramble phase
+        // Faster scramble phase
         let scrambleCount = 0;
         const scrambleInterval = setInterval(() => {
           const scrambled = text
             .split("")
             .map((char, index) => {
               if (index < currentIndex) return char;
-              if (index === currentIndex && scrambleCount > 5) return char;
+              if (index === currentIndex && scrambleCount > 2) return char; // Reduced from 5 to 2
               return scrambleChars[Math.floor(Math.random() * scrambleChars.length)];
             })
             .join("");
@@ -37,15 +37,15 @@ const ScrambleText = ({ text, isRevealed }: ScrambleTextProps) => {
           setDisplayText(scrambled);
           scrambleCount++;
 
-          if (scrambleCount > 8) {
+          if (scrambleCount > 4) { // Reduced from 8 to 4
             clearInterval(scrambleInterval);
             setCurrentIndex(prev => prev + 1);
           }
-        }, 50);
+        }, 25); // Reduced from 50ms to 25ms for faster scrambling
       }
     };
 
-    interval = setInterval(revealText, 100);
+    interval = setInterval(revealText, 40); // Reduced from 100ms to 40ms for faster character reveal
 
     return () => {
       clearInterval(interval);

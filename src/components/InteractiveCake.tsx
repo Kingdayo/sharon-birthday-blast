@@ -80,28 +80,61 @@ export const InteractiveCake = () => {
         </h3>
         
         <div className="relative mb-6">
-          {/* Cake */}
-          <div className="w-48 h-32 mx-auto bg-accent rounded-lg relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-b from-accent to-amber-600"></div>
+          {/* Cake Container with Shadow */}
+          <div className="relative mx-auto" style={{ width: '280px', height: '200px' }}>
             
-            {/* Candles */}
-            <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 flex gap-2">
+            {/* Cake Plate */}
+            <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-72 h-6 bg-gradient-to-r from-gray-300 via-gray-100 to-gray-300 rounded-full shadow-lg"></div>
+            
+            {/* Bottom Cake Layer */}
+            <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 w-56 h-20 bg-gradient-to-b from-amber-100 to-amber-200 rounded-lg shadow-xl">
+              <div className="absolute inset-0 bg-gradient-to-r from-amber-200 via-yellow-100 to-amber-200 rounded-lg"></div>
+              {/* Bottom layer decorative border */}
+              <div className="absolute bottom-2 left-2 right-2 h-1 bg-primary rounded-full"></div>
+              <div className="absolute bottom-4 left-4 right-4 h-px bg-primary/50"></div>
+            </div>
+            
+            {/* Top Cake Layer */}
+            <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 w-44 h-16 bg-gradient-to-b from-pink-100 to-pink-200 rounded-lg shadow-lg">
+              <div className="absolute inset-0 bg-gradient-to-r from-pink-200 via-pink-100 to-pink-200 rounded-lg"></div>
+              {/* Top layer decorative swirls */}
+              <div className="absolute top-2 left-3 text-xs text-primary">🌸</div>
+              <div className="absolute top-3 right-4 text-xs text-secondary">🌟</div>
+              <div className="absolute bottom-3 left-6 text-xs text-accent">✨</div>
+              <div className="absolute bottom-2 right-6 text-xs text-primary">💫</div>
+            </div>
+            
+            {/* Candles with realistic design */}
+            <div className="absolute bottom-32 left-1/2 transform -translate-x-1/2 flex gap-3">
               {candlesLit.map((isLit, index) => (
                 <div key={index} className="flex flex-col items-center">
-                  {/* Flame */}
+                  {/* Flame with glow effect */}
                   {isLit && (
-                    <div className="w-2 h-3 bg-orange-500 rounded-full animate-candle-flicker mb-1" />
+                    <div className="relative mb-1">
+                      <div className="w-3 h-4 bg-gradient-to-t from-red-500 via-orange-400 to-yellow-300 rounded-full animate-candle-flicker shadow-glow" />
+                      <div className="absolute inset-0 w-3 h-4 bg-yellow-300 rounded-full opacity-60 animate-pulse" />
+                    </div>
                   )}
-                  {/* Candle */}
-                  <div className="w-1 h-8 bg-yellow-200 rounded-sm" />
+                  {/* Candle with wax drips */}
+                  <div className="relative">
+                    <div className="w-2 h-10 bg-gradient-to-b from-yellow-200 to-yellow-300 rounded-sm shadow-md" />
+                    <div className="absolute top-2 -left-px w-1 h-3 bg-yellow-100 rounded-full opacity-70" />
+                    <div className="absolute top-5 -right-px w-1 h-2 bg-yellow-100 rounded-full opacity-70" />
+                  </div>
                 </div>
               ))}
             </div>
             
-            {/* Decorations */}
-            <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 text-white text-sm">
-              Happy Birthday!
+            {/* Decorative elements */}
+            <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 text-white font-bold text-sm bg-primary/80 px-3 py-1 rounded-full shadow-lg">
+              Happy Birthday! 🎂
             </div>
+            
+            {/* Sparkles around cake */}
+            <div className="absolute top-4 left-4 text-yellow-300 animate-bounce-gentle">✨</div>
+            <div className="absolute top-8 right-6 text-pink-300 animate-float">🌟</div>
+            <div className="absolute bottom-32 left-2 text-purple-300 animate-wiggle">💫</div>
+            <div className="absolute bottom-24 right-2 text-blue-300 animate-bounce-gentle">⭐</div>
           </div>
         </div>
 
