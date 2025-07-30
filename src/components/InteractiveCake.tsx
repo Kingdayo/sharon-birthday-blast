@@ -7,7 +7,7 @@ export const InteractiveCake = () => {
   const [candlesLit, setCandlesLit] = useState(Array(5).fill(true));
   const [isListening, setIsListening] = useState(false);
   const [hasBlownCandles, setHasBlownCandles] = useState(false);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const mediaStreamRef = useRef<MediaStream | null>(null);
 
   const startListening = async () => {
     try {
@@ -16,68 +16,97 @@ export const InteractiveCake = () => {
         audio: { 
           echoCancellation: false,
           noiseSuppression: false,
-          autoGainControl: false 
+          autoGainControl: false,
+          sampleRate: 44100
         } 
       });
-      const mediaRecorder = new MediaRecorder(stream);
-      mediaRecorderRef.current = mediaRecorder;
-
+      
       const audioContext = new AudioContext();
       const analyser = audioContext.createAnalyser();
       const microphone = audioContext.createMediaStreamSource(stream);
       
       microphone.connect(analyser);
-      analyser.fftSize = 1024; // Increased for better frequency resolution
-      analyser.smoothingTimeConstant = 0.3;
+      analyser.fftSize = 2048;
+      analyser.smoothingTimeConstant = 0.1;
       
       const bufferLength = analyser.frequencyBinCount;
       const dataArray = new Uint8Array(bufferLength);
+      const timeDataArray = new Uint8Array(analyser.fftSize);
+      
       let previousVolume = 0;
       let blowDetected = false;
+      let consecutiveBlowSamples = 0;
 
       const checkVolume = () => {
+        // Get both frequency and time domain data
         analyser.getByteFrequencyData(dataArray);
+        analyser.getByteTimeDomainData(timeDataArray);
         
-        // Focus on lower frequency range typical of blowing sounds (20Hz-200Hz)
-        const blowRange = dataArray.slice(1, 20); // Roughly 20-200Hz range
-        const midRange = dataArray.slice(20, 60);  // Mid frequencies
+        // Calculate RMS (Root Mean Square) for better volume detection
+        let rms = 0;
+        for (let i = 0; i < timeDataArray.length; i++) {
+          const normalized = (timeDataArray[i] - 128) / 128;
+          rms += normalized * normalized;
+        }
+        rms = Math.sqrt(rms / timeDataArray.length) * 100;
+        
+        // Focus on lower frequency range typical of blowing sounds (0-300Hz)
+        const sampleRate = audioContext.sampleRate;
+        const lowFreqEnd = Math.floor((300 / sampleRate) * bufferLength);
+        const blowRange = dataArray.slice(0, lowFreqEnd);
+        const midRange = dataArray.slice(lowFreqEnd, lowFreqEnd * 3);
+        
         const totalVolume = dataArray.reduce((sum, value) => sum + value, 0) / bufferLength;
-        
         const blowVolume = blowRange.reduce((sum, value) => sum + value, 0) / blowRange.length;
         const midVolume = midRange.reduce((sum, value) => sum + value, 0) / midRange.length;
         
-        // Detect sudden increase in low frequencies (blow pattern)
-        const volumeIncrease = totalVolume - previousVolume;
-        const isBlowPattern = blowVolume > 25 && blowVolume > midVolume && volumeIncrease > 10;
+        // Enhanced blow detection using multiple criteria
+        const volumeIncrease = rms - previousVolume;
+        const isLowFreqDominant = blowVolume > midVolume * 1.2;
+        const hasVolume = rms > 5; // Lowered threshold
+        const hasIncrease = volumeIncrease > 2;
         
-        console.log(`Volume: ${totalVolume.toFixed(1)}, Blow: ${blowVolume.toFixed(1)}, Pattern: ${isBlowPattern}`);
+        // Count consecutive samples that look like blowing
+        if (hasVolume && (isLowFreqDominant || hasIncrease)) {
+          consecutiveBlowSamples++;
+        } else {
+          consecutiveBlowSamples = 0;
+        }
+        
+        const isBlowPattern = consecutiveBlowSamples >= 3; // Need 3 consecutive samples
+        
+        console.log(`RMS: ${rms.toFixed(1)}, TotalVol: ${totalVolume.toFixed(1)}, BlowVol: ${blowVolume.toFixed(1)}, Consecutive: ${consecutiveBlowSamples}, Pattern: ${isBlowPattern}`);
         
         // If blow pattern detected and candles are lit, blow them out
         if (isBlowPattern && candlesLit.some(candle => candle) && !blowDetected) {
-          console.log("Blow detected! Extinguishing candles...");
+          console.log("🎉 BLOW DETECTED! Extinguishing candles...");
           blowDetected = true;
           blowOutCandles();
           setTimeout(() => stopListening(), 500);
         }
         
-        previousVolume = totalVolume;
+        previousVolume = rms;
         
         if (isListening) {
           requestAnimationFrame(checkVolume);
         }
       };
 
+      // Store the stream for cleanup
+      mediaStreamRef.current = stream;
       setIsListening(true);
       checkVolume();
     } catch (error) {
       console.error("Error accessing microphone:", error);
+      alert("Please allow microphone access to blow out candles!");
     }
   };
 
   const stopListening = () => {
     setIsListening(false);
-    if (mediaRecorderRef.current) {
-      mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
+    if (mediaStreamRef.current) {
+      mediaStreamRef.current.getTracks().forEach(track => track.stop());
+      mediaStreamRef.current = null;
     }
   };
 
